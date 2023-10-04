@@ -3,20 +3,24 @@
 {% block content %}
 <h1>Projects</h1>
 
-<h2>Name: {{ name }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects %}
+        <tr>
+            <td>{{project.id}}</td>
+            <td>{{project.title}} {% if project.topRated %} <strong>&starf;</strong> {% endif %} </td>
+            <td>{{project.description}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-{% if age > 27 %}
-
-<h4> {{ name }} is older than 27</h4>
-
-{% elif age == 27 %}
-
-<h4> {{ name }} is 27</h4>
-
-{% else %}
-
-<h4> {{ name }} is younger than 27</h4>
-
-{% endif %}
 
 {% endblock content %}
