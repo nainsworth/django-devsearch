@@ -3,5 +3,20 @@
 {% block content %}
 <h1>Projects</h1>
 
-<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, eos tempore pariatur enim excepturi, in sapiente blanditiis at laborum nemo ab suscipit minus perferendis maiores neque quae libero. Sunt, cupiditate! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laudantium, officiis pariatur in explicabo deleniti officia mollitia hic iusto delectus harum, reprehenderit obcaecati, dolore molestiae neque ipsam! Ea labore quos facere?</p>
+<h2>Name: {{ name }}</h2>
+
+{% if age > 27 %}
+
+<h4> {{ name }} is older than 27</h4>
+
+{% elif age == 27 %}
+
+<h4> {{ name }} is 27</h4>
+
+{% else %}
+
+<h4> {{ name }} is younger than 27</h4>
+
+{% endif %}
+
 {% endblock content %}
