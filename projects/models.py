@@ -10,7 +10,7 @@ class Project(models.Model):
     demo_link = models.CharField(max_length=1000, null=True, blank=True)
     source_link = models.CharField(max_length=1000, null=True, blank=True)
     vote_total = models.IntegerField(default=0)
-    vote_ration = models.IntegerField(default=0)
+    vote_ratio = models.IntegerField(default=0)
     tags = models.ManyToManyField("Tag", blank=True)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(
