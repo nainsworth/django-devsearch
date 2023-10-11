@@ -1,4 +1,9 @@
-{% extends "main.html" %} {% block content %}
+{% extends "main.html" %}
+{% load static %}
+{% block content %}
+
+<img width="200px" src="{% static 'images/user-placeholder.jpg' %}" alt="">
+
 <h1>Projects</h1>
 
 <table>
