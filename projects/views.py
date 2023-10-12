@@ -6,8 +6,10 @@ from .forms import ProjectForm
 
 def projects(request):
     projects = Project.objects.all()
+    template = "projects/projects.html"
+
     context = {"projects": projects}
-    return render(request, "projects/projects.html", context)
+    return render(request, template, context)
 
 
 def project(request, pk):
