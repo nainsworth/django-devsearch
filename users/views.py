@@ -77,3 +77,13 @@ def userProfiles(request, pk):
 
     context = {'profile': profileObj, 'topSkills': topSkills, 'otherSkills': otherSkills}
     return render(request, template, context)
+
+@login_required(login_url='login')
+def userAccount(request):
+    template = "users/account.html"
+    profile = request.user.profile
+    skills = profile.skill_set.all()
+    projects = profile.project_set.all()
+
+    context = {'profile': profile, 'skills': skills, 'projects': projects}
+    return render(request, template, context)
