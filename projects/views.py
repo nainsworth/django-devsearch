@@ -18,18 +18,40 @@ def project(request, pk):
     tags = projectObj.tags.all()
     reviews = projectObj.review_set.all()
     template = "projects/single-project.html"
-    
+
     context = {"project": projectObj, "tags": tags, "reviews": reviews}
     return render(request, template, context)
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def createProject(request):
     context = {}
+    profile = request.user.profile
     form = ProjectForm()
     template = "projects/project-form.html"
 
     if request.method == "POST":
         form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.owner = profile
+            project.save()
+            return redirect("projects")
+
+    context["form"] = form
+    return render(request, template, context)
+
+
+@login_required(login_url="login")
+def updateProject(request, pk):
+    context = {}
+    profile = request.user.profile
+    projectObj = profile.project_set.get(id=pk)
+    form = ProjectForm(instance=projectObj)
+    template = "projects/project-form.html"
+
+    if request.method == "POST":
+        form = ProjectForm(request.POST, request.FILES, instance=projectObj)
         if form.is_valid():
             form.save()
             return redirect("projects")
@@ -37,31 +59,17 @@ def createProject(request):
     context["form"] = form
     return render(request, template, context)
 
-@login_required(login_url='login')
-def updateProject(request, pk):
-    context = {}
-    projectObj = Project.objects.get(id=pk)
-    form = ProjectForm(instance=projectObj)
-    template = "projects/project-form.html"
 
-    if request.method == 'POST':
-        form = ProjectForm(request.POST, request.FILES, instance=projectObj)
-        if form.is_valid():
-            form.save()
-            return redirect("projects")
-
-    context['form'] = form
-    return render(request, template, context)
-
-@login_required(login_url='login')
+@login_required(login_url="login")
 def deleteProject(request, pk):
     context = {}
-    projectObj = Project.objects.get(id=pk)
+    profile = request.user.profile
+    projectObj = profile.project_set.get(id=pk)
     template = "projects/delete.html"
 
-    if request.method == 'POST':
+    if request.method == "POST":
         projectObj.delete()
         return redirect("projects")
 
-    context['object'] = projectObj
+    context["object"] = projectObj
     return render(request, template, context)
