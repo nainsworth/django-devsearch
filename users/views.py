@@ -4,22 +4,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Profile
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, ProfileForm
+
 
 def loginUser(request):
-    page = 'login'
+    page = "login"
 
     if request.user.is_authenticated:
-        return redirect('profiles')
-
+        return redirect("profiles")
 
     template = "users/login-register.html"
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
 
-        try: 
-            user = User.objects.get(username = username)
+        try:
+            user = User.objects.get(username=username)
         except:
             messages.error(request, "Username does not exist")
 
@@ -27,21 +27,23 @@ def loginUser(request):
 
         if user is not None:
             login(request, user)
-            return redirect('profiles')
+            return redirect("profiles")
         else:
-            messages.error(request, 'Username OR Password is incorrect')
+            messages.error(request, "Username OR Password is incorrect")
 
     # context = {'profiles': profiles}
     return render(request, template)
 
+
 def logoutUser(request):
     logout(request)
-    messages.info(request, 'User was logged out!')
+    messages.info(request, "User was logged out!")
     return redirect("login")
+
 
 def registerUser(request):
     template = "users/login-register.html"
-    page = 'register'
+    page = "register"
     form = CustomUserCreationForm()
 
     if request.method == "POST":
@@ -51,14 +53,14 @@ def registerUser(request):
             user.username = user.username.lower()
             user.save()
 
-            messages.success(request, 'User account was created!')
+            messages.success(request, "User account was created!")
             login(request, user)
-            return redirect('profiles')
-        
-        else:
-            messages.success(request, 'An error has occurred')
+            return redirect("edit-account")
 
-    context = {'page': page, 'form': form}
+        else:
+            messages.success(request, "An error has occurred")
+
+    context = {"page": page, "form": form}
     return render(request, template, context)
 
 
@@ -66,8 +68,9 @@ def profiles(request):
     template = "users/profiles.html"
     profiles = Profile.objects.all()
 
-    context = {'profiles': profiles}
+    context = {"profiles": profiles}
     return render(request, template, context)
+
 
 def userProfiles(request, pk):
     profileObj = Profile.objects.get(id=pk)
@@ -75,15 +78,37 @@ def userProfiles(request, pk):
     otherSkills = profileObj.skill_set.filter(description="")
     template = "users/user-profile.html"
 
-    context = {'profile': profileObj, 'topSkills': topSkills, 'otherSkills': otherSkills}
+    context = {
+        "profile": profileObj,
+        "topSkills": topSkills,
+        "otherSkills": otherSkills,
+    }
     return render(request, template, context)
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def userAccount(request):
     template = "users/account.html"
     profile = request.user.profile
     skills = profile.skill_set.all()
     projects = profile.project_set.all()
 
-    context = {'profile': profile, 'skills': skills, 'projects': projects}
+    context = {"profile": profile, "skills": skills, "projects": projects}
+    return render(request, template, context)
+
+
+@login_required(login_url="login")
+def editAccount(request):
+    template = "users/profile-form.html"
+    profile = request.user.profile
+    form = ProfileForm(instance=profile)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+
+            return redirect("account")
+
+    context = {"form": form}
     return render(request, template, context)
