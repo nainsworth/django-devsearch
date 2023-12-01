@@ -1,26 +1,29 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from .models import Project
 from .forms import ProjectForm
-from .utils import searchProjects
+from .utils import searchProjects, paginateProjects
 
 
 def projects(request):
-    projects, search_query = searchProjects(request)
-
     template = "projects/projects.html"
+    projects, search_query = searchProjects(request)
+    custom_range, projects = paginateProjects(request, projects, 6)
 
-    context = {"projects": projects, "search_query": search_query}
+    context = {
+        "projects": projects,
+        "search_query": search_query,
+        "custom_range": custom_range,
+    }
     return render(request, template, context)
 
 
 def project(request, pk):
+    template = "projects/single-project.html"
     projectObj = Project.objects.get(id=pk)
     tags = projectObj.tags.all()
     reviews = projectObj.review_set.all()
-    template = "projects/single-project.html"
 
     context = {"project": projectObj, "tags": tags, "reviews": reviews}
     return render(request, template, context)
@@ -28,10 +31,10 @@ def project(request, pk):
 
 @login_required(login_url="login")
 def createProject(request):
+    template = "projects/project-form.html"
     context = {}
     profile = request.user.profile
     form = ProjectForm()
-    template = "projects/project-form.html"
 
     if request.method == "POST":
         form = ProjectForm(request.POST, request.FILES)

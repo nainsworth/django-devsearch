@@ -23,14 +23,8 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
-    # @property
-    # def imageURL(self):
-    #     try:
-    #         if self.featured_image.url:
-    #             img = self.featured_image.url
-    #     except:
-    #         img = ""
-    #     return img
+    class Meta: 
+        ordering = ['created']
 
 
 class Review(models.Model):
