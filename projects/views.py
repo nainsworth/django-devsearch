@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Project
-from .forms import ProjectForm
+from .forms import ProjectForm, ReviewForm
 from .utils import searchProjects, paginateProjects
 
 
@@ -24,8 +25,21 @@ def project(request, pk):
     projectObj = Project.objects.get(id=pk)
     tags = projectObj.tags.all()
     reviews = projectObj.review_set.all()
+    form = ReviewForm()
 
-    context = {"project": projectObj, "tags": tags, "reviews": reviews}
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        review = form.save(commit=False)
+        review.project = projectObj
+        review.owner = request.user.profile
+        review.save()
+
+        projectObj.getVoteCount
+        
+        messages.success(request, "Your review was successfully submitted!")
+        return redirect("project", pk=projectObj.id)
+
+    context = {"project": projectObj, "tags": tags, "reviews": reviews, "form": form}
     return render(request, template, context)
 
 
