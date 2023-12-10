@@ -9,6 +9,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("projects/", include("projects.urls")),
     path("", include("users.urls")),
+    # API
+    path('api/', include('api.urls')),
     # Password Reset Paths
     path(
         "reset_password/",
